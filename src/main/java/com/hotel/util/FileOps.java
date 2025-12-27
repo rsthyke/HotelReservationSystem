@@ -1,4 +1,4 @@
-package com.hotel.utility;
+package com.hotel.util;
 
 import java.io.File;
 import java.io.FileWriter;
