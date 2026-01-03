@@ -13,12 +13,19 @@ public class Main {
         
         // Load data at start
         dataService.loadData(hotel);
-        
+
         // If no rooms loaded, add some defaults
         if (hotel.getTotalRooms() == 0) {
-            hotel.addRoom(new StandardRoom("101", 2, 100.0));
-            hotel.addRoom(new StandardRoom("102", 2, 100.0));
-            hotel.addRoom(new DeluxeRoom("201", 4, 200.0));
+            // StandardRoom: (Num, Cap, Price, Wifi, TV) -> Sona true, true ekle
+            hotel.addRoom(new StandardRoom("101", 2, 100.0, true, true));
+            hotel.addRoom(new StandardRoom("102", 2, 100.0, true, true));
+            hotel.addRoom(new StandardRoom("103", 2, 100.0, true, true));
+            hotel.addRoom(new StandardRoom("104", 2, 100.0, true, true));
+
+            // DeluxeRoom: (Num, Cap, Price, Minibar, Jacuzzi, Balcony, Tax) -> Sona true, true, true, 20.0 ekle
+            hotel.addRoom(new DeluxeRoom("201", 4, 200.0, true, true, true, 20.0));
+            hotel.addRoom(new DeluxeRoom("202", 4, 200.0, true, true, true, 20.0));
+            hotel.addRoom(new DeluxeRoom("203", 4, 200.0, true, true, true, 20.0));
         }
 
         while (true) {
@@ -28,9 +35,14 @@ public class Main {
             System.out.println("3. Make Reservation");
             System.out.println("4. Save & Exit");
             System.out.print("Choice: ");
-            
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+
+            int choice = 0;
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                continue;
+            }
             
             if (choice == 1) {
                 hotel.displayAllRooms();
