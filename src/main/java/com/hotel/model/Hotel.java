@@ -80,6 +80,8 @@ public class Hotel {
     }
 
     // Getters
+    public String getName() {return name;}
+    public String getAddress() {return address;}
     public ArrayList<Room> getRooms() { return rooms; }
     public ArrayList<Customer> getCustomers() { return customers; }
     public ArrayList<Reservation> getReservations() { return reservations; }

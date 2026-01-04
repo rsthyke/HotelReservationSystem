@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class Reservation {
     private static int reservationCounter = 0;
-    
+
     private String reservationId;
     private Customer customer;
     private Room room;
@@ -27,26 +27,26 @@ public class Reservation {
     }
 
     public double calculateTotalAmount() {
-        long days = checkOutDate.toEpochDay() - checkInDate.toEpochDay();
-        if (days <= 0) return 0;
-        return days * room.calculatePrice();
+        long days = java.time.temporal.ChronoUnit.DAYS.between(checkInDate, checkOutDate);
+        if (days < 1) days = 1;
+        return room.getBasePrice() * days;
     }
 
     // Getters and Setters
     public String getReservationId() { return reservationId; }
-    
+
     public Customer getCustomer() { return customer; }
     public void setCustomer(Customer customer) { this.customer = customer; }
-    
+
     public Room getRoom() { return room; }
     public void setRoom(Room room) { this.room = room; }
-    
+
     public LocalDate getCheckInDate() { return checkInDate; }
     public void setCheckInDate(LocalDate checkInDate) { this.checkInDate = checkInDate; }
-    
+
     public LocalDate getCheckOutDate() { return checkOutDate; }
     public void setCheckOutDate(LocalDate checkOutDate) { this.checkOutDate = checkOutDate; }
-    
+
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 

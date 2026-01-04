@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Customer {
     private static int customerCounter = 0;
-    
+
     private String customerId;
     private String firstName;
     private String lastName;
@@ -87,7 +87,7 @@ public class Customer {
     public int getLoyaltyPoints() {
         return loyaltyPoints;
     }
-    
+
     // For loading from file
     public void addLoyaltyPoints(int points) {
         this.loyaltyPoints += points;
