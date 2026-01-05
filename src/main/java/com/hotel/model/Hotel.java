@@ -2,6 +2,8 @@ package com.hotel.model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Hotel {
     private String name;
@@ -27,15 +29,23 @@ public class Hotel {
     }
 
     public void bookRoom(Customer customer, Room room, LocalDate checkIn, LocalDate checkOut) {
-        if (room.isClean()) { // Simple check
-            Reservation res = new Reservation(customer, room, checkIn, checkOut);
-            reservations.add(res);
-            room.addReservation(res);
-            customer.addReservation(res);
-            System.out.println("Reservation successful! ID: " + res.getReservationId());
-        } else {
-            System.out.println("Room is not available.");
+        if (customer.getLastBookingTime() != null &&
+                Duration.between(customer.getLastBookingTime(), LocalDateTime.now()).getSeconds() < 10) {
+            System.out.println("Fraud alert! You are booking too fast. Please wait a moment.");
+            return;
         }
+
+        if (!room.isClean()) {
+            System.out.println("Room " + room.getRoomNumber() + " is not available.");
+            return;
+        }
+
+        Reservation res = new Reservation(customer, room, checkIn, checkOut);
+        reservations.add(res);
+        room.addReservation(res);
+        customer.addReservation(res);
+        customer.setLastBookingTime(LocalDateTime.now());
+        System.out.println("Reservation successful! ID: " + res.getReservationId() + " in Room: " + room.getRoomNumber());
     }
 
     public ArrayList<Room> searchAvailableRooms(LocalDate checkIn, LocalDate checkOut) {

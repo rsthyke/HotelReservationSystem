@@ -1,6 +1,7 @@
 package com.hotel.model;
 
 import java.util.ArrayList;
+import java.time.LocalDateTime;
 
 public class Customer {
     private static int customerCounter = 0;
@@ -12,6 +13,7 @@ public class Customer {
     private String phoneNumber;
     private ArrayList<Reservation> reservationHistory;
     private int loyaltyPoints;
+    private LocalDateTime lastBookingTime;
 
     public Customer(String firstName, String lastName, String email, String phoneNumber) {
         this.customerId = generateCustomerId();
@@ -47,46 +49,38 @@ public class Customer {
     public String getCustomerId() {
         return customerId;
     }
-
     public String getFirstName() {
         return firstName;
     }
-
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-
     public String getLastName() {
         return lastName;
     }
-
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
-
     public String getPhoneNumber() {
         return phoneNumber;
     }
-
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-
     public ArrayList<Reservation> getReservationHistory() {
         return reservationHistory;
     }
-
     public int getLoyaltyPoints() {
         return loyaltyPoints;
     }
+    public LocalDateTime getLastBookingTime() {return lastBookingTime;}
+    public void setLastBookingTime(LocalDateTime lastBookingTime) {this.lastBookingTime = lastBookingTime;}
 
     // For loading from file
     public void addLoyaltyPoints(int points) {
