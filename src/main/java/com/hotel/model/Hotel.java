@@ -106,6 +106,97 @@ public class Hotel {
         }
     }
 
+    public void displayReservations(String email) {
+        System.out.println("\n--- Reservations for " + email + " ---");
+        boolean found = false;
+        for (Reservation r : reservations) {
+            if (r.getCustomer().getEmail().equals(email)) {
+                System.out.println(r.getReservationId() + " - Room: " + r.getRoom().getRoomNumber() +
+                        " (" + r.getCheckInDate() + " to " + r.getCheckOutDate() + ")");
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("No reservations found for this email.");
+        }
+    }
+
+    public double calculateRevenue() {
+        double total = 0;
+        for (Reservation r : reservations) {
+            total += r.calculateTotalAmount();
+        }
+        return total;
+    }
+
+    public void displayMostPopularRoom() {
+        if (reservations.isEmpty()) {
+            System.out.println("No data available.");
+            return;
+        }
+
+        Room popular = null;
+        int maxCount = -1;
+
+        for (Room r : rooms) {
+            int count = 0;
+            for (Reservation res : reservations) {
+                if (res.getRoom().getRoomNumber().equals(r.getRoomNumber())) {
+                    count++;
+                }
+            }
+            if (count > maxCount) {
+                maxCount = count;
+                popular = r;
+            }
+        }
+
+        if (popular != null) {
+            System.out.println("Most Popular Room: " + popular.getRoomNumber() + " (" + maxCount + " bookings)");
+        }
+    }
+
+    public void listAllCustomers() {
+        System.out.println("\n--- All Customers ---");
+        for (Customer c : customers) {
+            System.out.println("ID: " + c.getCustomerId() + " | " + c.getFirstName() + " " + c.getLastName() + " | " + c.getEmail());
+        }
+    }
+
+    public double calculateOccupancyRate() {
+        if (rooms.isEmpty()) return 0.0;
+        int occupiedCount = 0;
+        LocalDate today = LocalDate.now();
+
+        for (Room room : rooms) {
+            boolean isOccupied = false;
+            for (Reservation res : reservations) {
+                if (res.getRoom().getRoomNumber().equals(room.getRoomNumber())) {
+                    if (!today.isBefore(res.getCheckInDate()) && !today.isAfter(res.getCheckOutDate())) {
+                        isOccupied = true;
+                        break;
+                    }
+                }
+            }
+            if (isOccupied) occupiedCount++;
+        }
+        return (double) occupiedCount / rooms.size() * 100;
+    }
+
+    public void listVIPCustomers() {
+        System.out.println("\n--- VIP Customers (3+ Bookings) ---");
+        boolean found = false;
+        for (Customer c : customers) {
+            if (c.getReservationHistory().size() >= 3) {
+                System.out.println("VIP: " + c.getFirstName() + " " + c.getLastName() + " (" + c.getReservationHistory().size() + " bookings)");
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("No VIP customers yet.");
+        }
+    }
+
     public Room recommendRoom(String email) {
         Customer customer = null;
 

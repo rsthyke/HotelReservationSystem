@@ -1,7 +1,8 @@
 package com.hotel.model;
 
-// Interface for rooms
+import java.time.LocalDate;
+
 public interface Reservable {
-    double calculatePrice();
+    double calculatePrice(LocalDate date);
     String getRoomType();
 }

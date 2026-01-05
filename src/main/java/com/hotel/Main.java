@@ -30,18 +30,18 @@ public class Main {
             hotel.addRoom(new StandardRoom("103", 2, 100.0, true, true));
             hotel.addRoom(new StandardRoom("104", 2, 100.0, true, true));
             // DeluxeRoom: (Num, Cap, Price, Minibar, Jacuzzi, Balcony, Tax)
-            hotel.addRoom(new DeluxeRoom("201", 4, 200.0, true, true, true, 20.0));
-            hotel.addRoom(new DeluxeRoom("202", 4, 200.0, true, true, true, 20.0));
-            hotel.addRoom(new DeluxeRoom("203", 4, 200.0, true, true, true, 20.0));
+            hotel.addRoom(new DeluxeRoom("201", 4, 200.0, true, true, true, 0.20));
+            hotel.addRoom(new DeluxeRoom("202", 4, 200.0, true, true, true, 0.20));
+            hotel.addRoom(new DeluxeRoom("203", 4, 200.0, true, true, true, 0.20));
         }
 
         while (true) {
-            System.out.println("\n--- HOTEL SYSTEM ---");
             System.out.println("1. List Rooms");
             System.out.println("2. Register Customer");
             System.out.println("3. Make Reservation");
             System.out.println("4. Get Room Recommendation");
-            System.out.println("5. Save & Exit");
+            System.out.println("5. View My Reservations");
+            System.out.println("6. Save & Exit");
             System.out.print("Choice: ");
 
             int choice = 0;
@@ -136,9 +136,31 @@ public class Main {
                 hotel.recommendRoom(email);
 
             } else if (choice == 5) {
+                System.out.print("Enter your email: ");
+                String email = scanner.nextLine();
+                hotel.displayReservations(email);
+
+            } else if (choice == 6) {
                 dataService.saveData(hotel);
                 System.out.println("Goodbye!");
                 break;
+
+            } else if (choice == 66) {
+                System.out.print("Enter Admin Password: ");
+                String pass = scanner.nextLine();
+                if (pass.equals("yozgat66")) {
+                    System.out.println("\n*** ADMIN PANEL ***");
+                    System.out.println("Total Revenue: $" + hotel.calculateRevenue());
+                    System.out.println("Occupancy Rate: " + String.format("%.1f", hotel.calculateOccupancyRate()) + "%");
+                    hotel.displayMostPopularRoom();
+                    hotel.listVIPCustomers();
+                    hotel.listAllCustomers();
+                    System.out.println("*******************");
+                } else {
+                    System.out.println("Access Denied!");
+                }
+            }
+
         }
         scanner.close();
     }
