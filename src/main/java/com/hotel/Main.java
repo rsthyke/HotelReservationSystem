@@ -40,7 +40,8 @@ public class Main {
             System.out.println("1. List Rooms");
             System.out.println("2. Register Customer");
             System.out.println("3. Make Reservation");
-            System.out.println("4. Save & Exit");
+            System.out.println("4. Get Room Recommendation");
+            System.out.println("5. Save & Exit");
             System.out.print("Choice: ");
 
             int choice = 0;
@@ -64,8 +65,9 @@ public class Main {
                 System.out.print("Phone: ");
                 String phone = scanner.nextLine();
 
-                hotel.registerCustomer(new Customer(fn, ln, email, phone));
-                System.out.println("Customer registered!");
+                Customer newCustomer = new Customer(fn, ln, email, phone);
+                hotel.registerCustomer(newCustomer);
+                System.out.println("Customer registered! Your ID is: " + newCustomer.getCustomerId());
             } else if (choice == 3) {
                 System.out.print("Customer Email: ");
                 String email = scanner.nextLine();
@@ -108,10 +110,14 @@ public class Main {
 
                 hotel.bookRoom(c, r, in, out);
             } else if (choice == 4) {
+                System.out.print("Enter Customer Email for Recommendation: ");
+                String email = scanner.nextLine();
+                hotel.recommendRoom(email);
+
+            } else if (choice == 5) {
                 dataService.saveData(hotel);
                 System.out.println("Goodbye!");
                 break;
-            }
         }
         scanner.close();
     }

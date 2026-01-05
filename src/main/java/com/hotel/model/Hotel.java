@@ -75,8 +75,58 @@ public class Hotel {
 
     public void displayAllRooms() {
         for (Room r : rooms) {
-            System.out.println(r.getRoomNumber() + " - " + r.getRoomType() + " - $" + r.calculatePrice());
+            System.out.println(r.getRoomNumber() + " - " + r.getRoomType() + " - $" + r.calculatePrice(LocalDate.now()));
         }
+    }
+
+    public Room recommendRoom(String email) {
+        Customer customer = null;
+
+        for (Customer c : customers) {
+            if (c.getEmail().equals(email)) {
+                customer = c;
+                break;
+            }
+        }
+
+        if (customer == null) {
+            System.out.println("Customer not found!");
+            return null;
+        }
+
+        System.out.println("Analyzing history for: " + customer.getFirstName());
+
+        int deluxeCount = 0;
+        int standardCount = 0;
+
+        for (Reservation res : customer.getReservationHistory()) {
+            if (res.getRoom() instanceof DeluxeRoom) {
+                deluxeCount++;
+            } else {
+                standardCount++;
+            }
+        }
+
+        System.out.println("Stats: " + deluxeCount + " Deluxe bookings vs " + standardCount + " Standard bookings.");
+
+        if (deluxeCount > standardCount) {
+            for (Room r : rooms) {
+                if (r instanceof DeluxeRoom && r.isClean()) {
+                    System.out.println(">>> Based on your history, we recommend Deluxe Room: " + r.getRoomNumber());
+                    return r;
+                }
+            }
+        }
+
+        for (Room r : rooms) {
+            if (r instanceof StandardRoom && r.isClean()) {
+                System.out.println(">>> We recommend Standard Room: " + r.getRoomNumber());
+                return r;
+            }
+        }
+
+        System.out.println("Sorry, no suitable room found.");
+        return null;
     }
 
     // Getters
