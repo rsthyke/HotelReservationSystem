@@ -1,5 +1,7 @@
 package com.hotel.model;
 
+import java.time.LocalDate;
+
 public class StandardRoom extends Room {
     private boolean hasWifi;
     private boolean hasTV;
@@ -17,8 +19,12 @@ public class StandardRoom extends Room {
     }
 
     @Override
-    public double calculatePrice() {
-        return getBasePrice();
+    public double calculatePrice(LocalDate date) {
+        double currentPrice = getBasePrice();
+        if (date.getDayOfWeek().getValue() >= 5) {
+            currentPrice *= 1.20;
+        }
+        return currentPrice;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.hotel.model;
 
+import java.time.LocalDate;
+
 public class DeluxeRoom extends Room {
     private boolean hasMiniBar;
     private boolean hasJacuzzi;
@@ -24,8 +26,12 @@ public class DeluxeRoom extends Room {
     }
 
     @Override
-    public double calculatePrice() {
-        return getBasePrice() * (1 + luxuryTax);
+    public double calculatePrice(LocalDate date) {
+        double currentPrice = getBasePrice() * (1 + luxuryTax);
+        if (date.getDayOfWeek().getValue() >= 5) {
+            currentPrice *= 1.30;
+        }
+        return currentPrice;
     }
 
     @Override

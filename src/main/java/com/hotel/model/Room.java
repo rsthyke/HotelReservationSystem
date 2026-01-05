@@ -1,6 +1,7 @@
 package com.hotel.model;
 
 import java.util.ArrayList;
+import java.time.LocalDate;
 
 // Abstract class for Room
 public abstract class Room implements Reservable {
@@ -19,7 +20,7 @@ public abstract class Room implements Reservable {
     }
 
     // Abstract method for polymorphism
-    public abstract double calculatePrice();
+    public abstract double calculatePrice(LocalDate date);
 
     public void addReservation(Reservation res) {
         reservations.add(res);
