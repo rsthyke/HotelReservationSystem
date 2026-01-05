@@ -60,11 +60,24 @@ public class Main {
                 String fn = scanner.nextLine();
                 System.out.print("Last Name: ");
                 String ln = scanner.nextLine();
-                System.out.print("Email: ");
-                String email = scanner.nextLine();
-                System.out.print("Phone: ");
-                String phone = scanner.nextLine();
-
+                String email;
+                while (true) {
+                    System.out.print("Email: ");
+                    email = scanner.nextLine();
+                    if (email.contains("@")) {
+                        break;
+                    }
+                    System.out.println("Error: Invalid email! Please try again.");
+                }
+                String phone;
+                while (true) {
+                    System.out.print("Phone: ");
+                    phone = scanner.nextLine();
+                    if (phone.matches("[0-9]+")) {
+                        break;
+                    }
+                    System.out.println("Error: Phone number must contain only digits! Please try again.");
+                }
                 Customer newCustomer = new Customer(fn, ln, email, phone);
                 hotel.registerCustomer(newCustomer);
                 System.out.println("Customer registered! Your ID is: " + newCustomer.getCustomerId());
@@ -93,6 +106,10 @@ public class Main {
                 while (in == null) {
                     try {
                         in = LocalDate.parse(scanner.nextLine());
+                        if (in.isBefore(LocalDate.now())) {
+                            System.out.print("Error: Date cannot be in the past! Try again: ");
+                            in = null;
+                        }
                     } catch (java.time.format.DateTimeParseException e) {
                         System.out.print("Invalid date format. Please use YYYY-MM-DD: ");
                     }
@@ -103,6 +120,10 @@ public class Main {
                 while (out == null) {
                     try {
                         out = LocalDate.parse(scanner.nextLine());
+                        if (out.isBefore(in) || out.equals(in)) {
+                            System.out.print("Error: Check-out must be after Check-in! Try again: ");
+                            out = null;
+                        }
                     } catch (java.time.format.DateTimeParseException e) {
                         System.out.print("Invalid date format. Please use YYYY-MM-DD: ");
                     }
