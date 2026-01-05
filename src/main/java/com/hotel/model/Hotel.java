@@ -37,7 +37,24 @@ public class Hotel {
 
         if (!room.isClean()) {
             System.out.println("Room " + room.getRoomNumber() + " is not available.");
-            return;
+
+            if (room instanceof StandardRoom) {
+                System.out.println("Checking for a Deluxe upgrade...");
+                Room deluxeUpgrade = searchAvailableRooms(checkIn, checkOut).stream()
+                        .filter(r -> r instanceof DeluxeRoom)
+                        .findFirst()
+                        .orElse(null);
+
+                if (deluxeUpgrade != null) {
+                    System.out.println("Good news! You've been upgraded to a Deluxe Room for the price of a Standard Room!");
+                    room = deluxeUpgrade;
+                } else {
+                    System.out.println("Sorry, no upgrades available.");
+                    return;
+                }
+            } else {
+                return;
+            }
         }
 
         Reservation res = new Reservation(customer, room, checkIn, checkOut);
