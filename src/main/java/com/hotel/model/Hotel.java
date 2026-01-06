@@ -6,11 +6,11 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class Hotel {
-    private String name;
-    private String address;
-    private ArrayList<Room> rooms;
-    private ArrayList<Customer> customers;
-    private ArrayList<Reservation> reservations;
+    private final String name;
+    private final String address;
+    private final ArrayList<Room> rooms;
+    private final ArrayList<Customer> customers;
+    private final ArrayList<Reservation> reservations;
 
     public Hotel(String name, String address) {
         this.name = name;
@@ -28,39 +28,22 @@ public class Hotel {
         customers.add(customer);
     }
 
-    public void bookRoom(Customer customer, Room room, LocalDate checkIn, LocalDate checkOut, boolean usePoints) {
+    public void bookRoom(Customer customer, Room room, LocalDate checkIn, LocalDate checkOut, boolean usePoints, boolean isFreeUpgrade) {
         if (customer.getLastBookingTime() != null &&
                 Duration.between(customer.getLastBookingTime(), LocalDateTime.now()).getSeconds() < 60) {
             System.out.println("Fraud alert! You are booking too fast. Please wait a moment.");
             return;
         }
 
-        if (!room.isClean()) {
-            System.out.println("Room " + room.getRoomNumber() + " is not available.");
-
-            if (room instanceof StandardRoom) {
-                System.out.println("Checking for a Deluxe upgrade...");
-                Room deluxeUpgrade = searchAvailableRooms(checkIn, checkOut).stream()
-                        .filter(r -> r instanceof DeluxeRoom)
-                        .findFirst()
-                        .orElse(null);
-
-                if (deluxeUpgrade != null) {
-                    System.out.println("Good news! You've been upgraded to a Deluxe Room for the price of a Standard Room!");
-                    room = deluxeUpgrade;
-                } else {
-                    System.out.println("Sorry, no upgrades available.");
-                    return;
-                }
-            } else {
-                return;
-            }
+        Room pricingRoom = room;
+        if (isFreeUpgrade) {
+            pricingRoom = new StandardRoom("TEMP", 2, 100.0, true, true);
         }
 
-        Reservation res = new Reservation(customer, room, checkIn, checkOut);
+        Reservation res = new Reservation(customer, pricingRoom, checkIn, checkOut);
         double totalAmount = res.calculateTotalAmount();
-        double discount = 0;
 
+        double discount = 0;
         if (usePoints) {
             int points = customer.getLoyaltyPoints();
             if (points > 0) {
@@ -89,10 +72,16 @@ public class Hotel {
 
         int pointsEarned = (int)(finalPrice * 0.05);
         customer.addLoyaltyPoints(pointsEarned);
+
+        res.setRoom(room);
+
         reservations.add(res);
         room.addReservation(res);
         customer.addReservation(res);
+
+        room.setClean(false);
         customer.setLastBookingTime(LocalDateTime.now());
+
         System.out.println("Reservation successful! ID: " + res.getReservationId() + " in Room: " + room.getRoomNumber());
         System.out.println("You earned " + pointsEarned + " Loyalty Points! Total Points: " + customer.getLoyaltyPoints());
     }
@@ -288,11 +277,17 @@ public class Hotel {
         return null;
     }
 
-    public void printInvoicePreview(Customer customer, Room room, LocalDate checkIn, LocalDate checkOut, boolean usePoints) {
-        Reservation tempRes = new Reservation(customer, room, checkIn, checkOut);
-        double totalAmount = tempRes.calculateTotalAmount();
-        double discount = 0;
+    public void printInvoicePreview(Customer customer, Room room, LocalDate checkIn, LocalDate checkOut, boolean usePoints, boolean isFreeUpgrade) {
 
+        Room pricingRoom = room;
+        if (isFreeUpgrade) {
+            pricingRoom = new StandardRoom("TEMP", 2, 100.0, true, true);
+        }
+
+        Reservation tempRes = new Reservation(customer, pricingRoom, checkIn, checkOut);
+        double totalAmount = tempRes.calculateTotalAmount();
+
+        double discount = 0;
         if (usePoints && customer.getLoyaltyPoints() > 0) {
             double maxDiscount = customer.getLoyaltyPoints() / 10.0;
             if (maxDiscount >= totalAmount) {
@@ -309,6 +304,9 @@ public class Hotel {
         System.out.println("========================================");
         System.out.println("Customer: " + customer.getFirstName() + " " + customer.getLastName());
         System.out.println("Room: " + room.getRoomNumber() + " (" + room.getRoomType() + ")");
+        if(isFreeUpgrade) {
+            System.out.println("*** FREE UPGRADE APPLIED (Standard Price) ***");
+        }
         System.out.println("Check-in:  " + checkIn);
         System.out.println("Check-out: " + checkOut);
         System.out.println("----------------------------------------");
@@ -318,6 +316,15 @@ public class Hotel {
         }
         System.out.printf("FINAL TO PAY:      $%.2f%n", finalPrice);
         System.out.println("========================================");
+    }
+
+    public Room findAvailableDeluxeRoom() {
+        for (Room r : rooms) {
+            if (r instanceof DeluxeRoom && r.isClean()) {
+                return r;
+            }
+        }
+        return null;
     }
 
     // Getters

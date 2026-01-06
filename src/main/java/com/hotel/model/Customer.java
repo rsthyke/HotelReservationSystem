@@ -6,12 +6,12 @@ import java.time.LocalDateTime;
 public class Customer {
     private static int customerCounter = 0;
 
-    private String customerId;
+    private final String customerId;
     private String firstName;
     private String lastName;
     private String email;
     private String phoneNumber;
-    private ArrayList<Reservation> reservationHistory;
+    private final ArrayList<Reservation> reservationHistory;
     private int loyaltyPoints;
     private LocalDateTime lastBookingTime;
 

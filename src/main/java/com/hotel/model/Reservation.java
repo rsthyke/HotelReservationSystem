@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public class Reservation {
     private static int reservationCounter = 0;
 
-    private String reservationId;
+    private final String reservationId;
     private Customer customer;
     private Room room;
     private LocalDate checkInDate;

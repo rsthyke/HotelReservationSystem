@@ -31,12 +31,10 @@ public class DataService {
 
         for (Room room : rooms) {
             String line = "";
-            if (room instanceof StandardRoom) {
-                StandardRoom std = (StandardRoom) room;
+            if (room instanceof StandardRoom std) {
                 line = "STANDARD," + room.getRoomNumber() + "," + room.getCapacity() + "," +
                        room.getBasePrice() + "," + std.hasWifi() + ";" + std.hasTV();
-            } else if (room instanceof DeluxeRoom) {
-                DeluxeRoom dlx = (DeluxeRoom) room;
+            } else if (room instanceof DeluxeRoom dlx) {
                 line = "DELUXE," + room.getRoomNumber() + "," + room.getCapacity() + "," +
                        room.getBasePrice() + "," + dlx.hasMiniBar() + ";" + dlx.hasJacuzzi() + ";" +
                        dlx.hasBalcony() + ";" + dlx.getLuxuryTax();

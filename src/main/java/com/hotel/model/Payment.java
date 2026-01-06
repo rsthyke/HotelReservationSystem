@@ -1,9 +1,9 @@
 package com.hotel.model;
 
 public class Payment {
-    private String paymentId;
-    private double amount;
-    private String method; // "Credit Card", "Cash"
+    private final String paymentId;
+    private final double amount;
+    private final String method; // "Credit Card", "Cash"
 
     public Payment(String paymentId, double amount, String method) {
         this.paymentId = paymentId;

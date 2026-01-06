@@ -37,7 +37,7 @@ public class Main {
 
         while (true) {
             System.out.println("\n========================================");
-            System.out.println("           OCEAN VIEV HOTEL");
+            System.out.println("           OCEAN VIEW HOTEL");
             System.out.println("========================================");
             System.out.println("  [1] List All Rooms");
             System.out.println("  [2] Register New Customer");
@@ -48,7 +48,7 @@ public class Main {
             System.out.println("========================================");
             System.out.print(">> Enter your choice: ");
 
-            int choice = 0;
+            int choice;
             // Prevent crash if user types text instead of number (Fixed Crash Bug)
             try {
                 choice = Integer.parseInt(scanner.nextLine());
@@ -59,6 +59,7 @@ public class Main {
 
             if (choice == 1) {
                 hotel.displayAllRooms();
+
             } else if (choice == 2) {
                 System.out.print("First Name: ");
                 String fn = scanner.nextLine();
@@ -85,6 +86,7 @@ public class Main {
                 Customer newCustomer = new Customer(fn, ln, email, phone);
                 hotel.registerCustomer(newCustomer);
                 System.out.println("Customer registered! Your ID is: " + newCustomer.getCustomerId());
+
             } else if (choice == 3) {
                 System.out.print("Customer Email: ");
                 String email = scanner.nextLine();
@@ -134,6 +136,37 @@ public class Main {
                     }
                 }
 
+                boolean isFreeUpgrade = false;
+
+                if (!selectedRoom.isClean()) {
+                    System.out.println("Warning: Room " + selectedRoom.getRoomNumber() + " is currently occupied/dirty.");
+
+                    if (selectedRoom instanceof StandardRoom) {
+                        Room upgradeRoom = hotel.findAvailableDeluxeRoom();
+
+                        if (upgradeRoom != null) {
+                            System.out.println("BUT! We have a Deluxe Room available: " + upgradeRoom.getRoomNumber());
+                            System.out.print("Would you like a FREE upgrade to Deluxe? (Y/N): ");
+                            String upg = scanner.nextLine().trim().toUpperCase();
+
+                            if (upg.equals("Y")) {
+                                selectedRoom = upgradeRoom;
+                                isFreeUpgrade = true;
+                                System.out.println("Great! You are upgraded to Room " + selectedRoom.getRoomNumber());
+                            } else {
+                                System.out.println("Reservation cancelled. Please choose another room.");
+                                continue;
+                            }
+                        } else {
+                            System.out.println("No other rooms available. Reservation cancelled.");
+                            continue;
+                        }
+                    } else {
+                        System.out.println("Selected Deluxe room is not available.");
+                        continue;
+                    }
+                }
+
                 boolean usePoints = false;
                 if (c.getLoyaltyPoints() > 0) {
                     System.out.println("You have " + c.getLoyaltyPoints() + " Loyalty Points.");
@@ -144,11 +177,13 @@ public class Main {
                     }
                 }
 
-                hotel.printInvoicePreview(c, selectedRoom, in, out, usePoints);
+                hotel.printInvoicePreview(c, selectedRoom, in, out, usePoints, isFreeUpgrade);
+
                 System.out.print("Confirm Payment and Reservation? (Y/N): ");
                 String confirm = scanner.nextLine().trim().toUpperCase();
+
                 if (confirm.equals("Y")) {
-                    hotel.bookRoom(c, selectedRoom, in, out, usePoints);
+                    hotel.bookRoom(c, selectedRoom, in, out, usePoints, isFreeUpgrade);
                 } else {
                     System.out.println("Transaction cancelled by user.");
                 }

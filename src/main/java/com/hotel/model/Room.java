@@ -9,7 +9,7 @@ public abstract class Room implements Reservable {
     private int capacity;
     private double basePrice;
     private boolean isClean;
-    private ArrayList<Reservation> reservations;
+    private final ArrayList<Reservation> reservations;
 
     public Room(String roomNumber, int capacity, double basePrice) {
         this.roomNumber = roomNumber;
