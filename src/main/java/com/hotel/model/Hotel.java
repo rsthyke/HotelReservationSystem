@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+//The main manager class for the Hotel system.
+//It manages rooms, customers, and reservations.
 public class Hotel {
     private final String name;
     private final String address;
@@ -28,28 +30,33 @@ public class Hotel {
         customers.add(customer);
     }
 
+    /**
+     * Handles the booking process.
+     * Includes fraud check, discounts, upgrades, and point calculation.
+     */
     public void bookRoom(Customer customer, Room room, LocalDate checkIn, LocalDate checkOut, boolean usePoints, boolean isFreeUpgrade) {
+        //Security Check: Prevent booking too fast (within 60 seconds)
         if (customer.getLastBookingTime() != null &&
                 Duration.between(customer.getLastBookingTime(), LocalDateTime.now()).getSeconds() < 60) {
             System.out.println("Fraud alert! You are booking too fast. Please wait a moment.");
             return;
         }
-
+        //Handle Upgrades: If upgraded, use Standard Room pricing temporarily
         Room pricingRoom = room;
         if (isFreeUpgrade) {
             pricingRoom = new StandardRoom("TEMP", 2, 100.0, true, true);
         }
-
+        //Create a temporary reservation to calculate cost
         Reservation res = new Reservation(customer, pricingRoom, checkIn, checkOut);
         double totalAmount = res.calculateTotalAmount();
-
+        //Handle Loyalty Points (Discount)
         double discount = 0;
         if (usePoints) {
             int points = customer.getLoyaltyPoints();
-            if (points > 0) {
+            if (points > 0) {// 10 points = $1 discount
                 double maxDiscount = points / 10.0;
                 if (maxDiscount >= totalAmount) {
-                    discount = totalAmount;
+                    discount = totalAmount;// Full cover
                     int pointsUsed = (int)(totalAmount * 10);
                     customer.redeemLoyaltyPoints(pointsUsed);
                     System.out.println("Loyalty Points Used: " + pointsUsed + " (-$" + totalAmount + ")");
@@ -62,19 +69,17 @@ public class Hotel {
                 System.out.println("No loyalty points available to use.");
             }
         }
-
+        //Calculate Final Price
         double finalPrice = totalAmount - discount;
         System.out.println("Total Price: $" + totalAmount);
         if (discount > 0) {
             System.out.println("Discount Applied: -$" + discount);
             System.out.println("Final Price to Pay: $" + finalPrice);
         }
-
+        //Earn new points (5% of payment)
         int pointsEarned = (int)(finalPrice * 0.05);
         customer.addLoyaltyPoints(pointsEarned);
-
         res.setRoom(room);
-
         reservations.add(res);
         room.addReservation(res);
         customer.addReservation(res);
@@ -86,6 +91,10 @@ public class Hotel {
         System.out.println("You earned " + pointsEarned + " Loyalty Points! Total Points: " + customer.getLoyaltyPoints());
     }
 
+    /**
+     * Finds rooms that are clean.
+     * In a real app, this should also check dates.
+     */
     public ArrayList<Room> searchAvailableRooms(LocalDate checkIn, LocalDate checkOut) {
         ArrayList<Room> availableRooms = new ArrayList<>();
         for (Room room : rooms) {
@@ -150,7 +159,7 @@ public class Hotel {
             System.out.println("No reservations found for this email.");
         }
     }
-
+    //Calculates total money earned from all reservations.
     public double calculateRevenue() {
         double total = 0;
         for (Reservation r : reservations) {
@@ -158,7 +167,7 @@ public class Hotel {
         }
         return total;
     }
-
+    //Finds the room that has been booked the most.
     public void displayMostPopularRoom() {
         if (reservations.isEmpty()) {
             System.out.println("No data available.");
@@ -192,7 +201,7 @@ public class Hotel {
             System.out.println("ID: " + c.getCustomerId() + " | " + c.getFirstName() + " " + c.getLastName() + " | " + c.getEmail());
         }
     }
-
+    //Calculates the percentage of rooms occupied right now.
     public double calculateOccupancyRate() {
         if (rooms.isEmpty()) return 0.0;
         int occupiedCount = 0;
@@ -212,7 +221,7 @@ public class Hotel {
         }
         return (double) occupiedCount / rooms.size() * 100;
     }
-
+    // Lists customers with more than 3 bookings
     public void listVIPCustomers() {
         System.out.println("\n--- VIP Customers (3+ Bookings) ---");
         boolean found = false;
@@ -226,7 +235,10 @@ public class Hotel {
             System.out.println("No VIP customers yet.");
         }
     }
-
+    /**
+     * Smart Feature: Recommends a room based on customer history.
+     * If they usually book Deluxe, suggest Deluxe.
+     */
     public Room recommendRoom(String email) {
         Customer customer = null;
 
@@ -276,7 +288,7 @@ public class Hotel {
         System.out.println("Sorry, no suitable room found.");
         return null;
     }
-
+    //Previews the invoice (bill) without saving the reservation.
     public void printInvoicePreview(Customer customer, Room room, LocalDate checkIn, LocalDate checkOut, boolean usePoints, boolean isFreeUpgrade) {
 
         Room pricingRoom = room;

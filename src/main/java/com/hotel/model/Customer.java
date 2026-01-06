@@ -3,6 +3,8 @@ package com.hotel.model;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 
+//Represents a customer of the hotel.
+//Stores personal details and reservation history.
 public class Customer {
     private static int customerCounter = 0;
 
@@ -24,16 +26,21 @@ public class Customer {
         this.reservationHistory = new ArrayList<>();
         this.loyaltyPoints = 0;
     }
-
+    //Generates a unique ID like "CUST1", "CUST2"
     private String generateCustomerId() {
         customerCounter++;
         return "CUST" + customerCounter;
     }
-
+    //Adds a reservation to the customer's history.
     public void addReservation(Reservation reservation) {
         reservationHistory.add(reservation);
     }
 
+    /**
+     * Uses loyalty points for a discount.
+     * @param points Points to use.
+     * @return true if successful, false if not enough points.
+     */
     public boolean redeemLoyaltyPoints(int points) {
         if (loyaltyPoints >= points) {
             loyaltyPoints -= points;

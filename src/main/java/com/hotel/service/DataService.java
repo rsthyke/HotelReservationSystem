@@ -5,19 +5,23 @@ import com.hotel.util.FileOps;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+//This class acts as a bridge between the Hotel logic and the File system.
+//It converts objects (Room, Customer) into text (CSV format) and back.
 public class DataService {
 
+    // File paths where data will be stored
     private static final String ROOMS_FILE = "data/rooms.csv";
     private static final String CUSTOMERS_FILE = "data/customers.csv";
     private static final String RESERVATIONS_FILE = "data/reservations.csv";
 
+    //Saves all hotel data (Rooms, Customers, Reservations) to files.
     public void saveData(Hotel hotel) {
         saveRooms(hotel.getRooms());
         saveCustomers(hotel.getCustomers());
         saveReservations(hotel.getReservations());
         System.out.println("Data saved.");
     }
-
+    //Loads all data from files into the Hotel object.
     public void loadData(Hotel hotel) {
         loadRooms(hotel);
         loadCustomers(hotel);
@@ -51,7 +55,7 @@ public class DataService {
             // Skip corrupted lines to prevent system crash
             try {
                 String[] parts = lines.get(i).split(",");
-                if (parts.length < 4) continue;
+                if (parts.length < 4) continue;// Skip if data is missing
 
                 String type = parts[0];
                 String number = parts[1];
@@ -97,6 +101,7 @@ public class DataService {
                 String[] parts = lines.get(i).split(",");
                 if (parts.length < 6) continue;
 
+                // Create customer and restore points
                 Customer c = new Customer(parts[1], parts[2], parts[3], parts[4]);
                 c.addLoyaltyPoints(Integer.parseInt(parts[5]));
                 hotel.registerCustomer(c);
@@ -110,6 +115,7 @@ public class DataService {
         ArrayList<String> lines = new ArrayList<>();
         lines.add("ID,CustomerEmail,RoomNumber,CheckIn,CheckOut,Status");
 
+        // We save Email and RoomNumber to link them back later
         for (Reservation r : reservations) {
             lines.add(r.getReservationId() + "," + r.getCustomer().getEmail() + "," +
                       r.getRoom().getRoomNumber() + "," + r.getCheckInDate() + "," +
@@ -126,13 +132,15 @@ public class DataService {
             try {
                 String[] parts = lines.get(i).split(",");
                 if (parts.length < 6) continue;
-
+                // We need to find the real objects using Email and Room Number
                 Customer customer = hotel.findCustomerByEmail(parts[1]);
                 Room room = hotel.findRoom(parts[2]);
 
                 if (customer != null && room != null) {
                     Reservation res = new Reservation(customer, room, LocalDate.parse(parts[3]), LocalDate.parse(parts[4]));
                     res.setStatus(parts[5]);
+
+                    // Link the reservation to everything
                     hotel.getReservations().add(res);
                     room.addReservation(res);
                     customer.addReservation(res);

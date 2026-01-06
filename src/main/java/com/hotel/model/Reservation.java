@@ -2,6 +2,8 @@ package com.hotel.model;
 
 import java.time.LocalDate;
 
+//This class holds information about a single reservation.
+//It links a Customer, a Room, and the Dates.
 public class Reservation {
     private static int reservationCounter = 0;
 
@@ -12,6 +14,13 @@ public class Reservation {
     private LocalDate checkOutDate;
     private String status; // PENDING, CONFIRMED, CANCELLED
 
+    /**
+     * Creates a new Reservation.
+     * @param customer The customer who made the reservation.
+     * @param room The reserved room.
+     * @param checkInDate The check-in date.
+     * @param checkOutDate The check-out date.
+     */
     public Reservation(Customer customer, Room room, LocalDate checkInDate, LocalDate checkOutDate) {
         this.reservationId = generateId();
         this.customer = customer;
@@ -26,6 +35,10 @@ public class Reservation {
         return "RES" + reservationCounter;
     }
 
+    /**
+     * Calculates the total cost by summing up the price of each night.
+     * It uses the room's calculatePrice method.
+     */
     public double calculateTotalAmount() {
         double totalAmount = 0;
         LocalDate date = checkInDate;
@@ -38,19 +51,14 @@ public class Reservation {
 
     // Getters and Setters
     public String getReservationId() { return reservationId; }
-
     public Customer getCustomer() { return customer; }
     public void setCustomer(Customer customer) { this.customer = customer; }
-
     public Room getRoom() { return room; }
     public void setRoom(Room room) { this.room = room; }
-
     public LocalDate getCheckInDate() { return checkInDate; }
     public void setCheckInDate(LocalDate checkInDate) { this.checkInDate = checkInDate; }
-
     public LocalDate getCheckOutDate() { return checkOutDate; }
     public void setCheckOutDate(LocalDate checkOutDate) { this.checkOutDate = checkOutDate; }
-
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 

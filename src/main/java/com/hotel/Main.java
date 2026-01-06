@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.util.Scanner;
 import java.io.File;
 
+//The Main class. This is where the application starts.
+//It handles User Interface (Console) and Menu loop.
 public class Main {
     public static void main(String[] args) {
         // Ensure data directory exists to prevent IO errors
@@ -61,11 +63,14 @@ public class Main {
                 hotel.displayAllRooms();
 
             } else if (choice == 2) {
+                // Register Customer Logic
                 System.out.print("First Name: ");
                 String fn = scanner.nextLine();
                 System.out.print("Last Name: ");
                 String ln = scanner.nextLine();
                 String email;
+
+                // Simple validation for email
                 while (true) {
                     System.out.print("Email: ");
                     email = scanner.nextLine();
@@ -75,6 +80,8 @@ public class Main {
                     System.out.println("Error: Invalid email! Please try again.");
                 }
                 String phone;
+
+                // Simple validation for phone (digits only)
                 while (true) {
                     System.out.print("Phone: ");
                     phone = scanner.nextLine();
@@ -88,6 +95,7 @@ public class Main {
                 System.out.println("Customer registered! Your ID is: " + newCustomer.getCustomerId());
 
             } else if (choice == 3) {
+                // Booking Logic
                 System.out.print("Customer Email: ");
                 String email = scanner.nextLine();
                 Customer c = hotel.findCustomerByEmail(email);
@@ -138,9 +146,11 @@ public class Main {
 
                 boolean isFreeUpgrade = false;
 
+                // Handle Dirty/Occupied Rooms
                 if (!selectedRoom.isClean()) {
                     System.out.println("Warning: Room " + selectedRoom.getRoomNumber() + " is currently occupied/dirty.");
 
+                    // Suggest Upgrade if it's a Standard Room
                     if (selectedRoom instanceof StandardRoom) {
                         Room upgradeRoom = hotel.findAvailableDeluxeRoom();
 
@@ -167,6 +177,7 @@ public class Main {
                     }
                 }
 
+                // Asking about points
                 boolean usePoints = false;
                 if (c.getLoyaltyPoints() > 0) {
                     System.out.println("You have " + c.getLoyaltyPoints() + " Loyalty Points.");
@@ -176,7 +187,7 @@ public class Main {
                         usePoints = true;
                     }
                 }
-
+                // Show preview before confirming
                 hotel.printInvoicePreview(c, selectedRoom, in, out, usePoints, isFreeUpgrade);
 
                 System.out.print("Confirm Payment and Reservation? (Y/N): ");
@@ -204,6 +215,7 @@ public class Main {
                 break;
 
             } else if (choice == 66) {
+                // Secret Admin Panel
                 System.out.print("Enter Admin Password: ");
                 String pass = scanner.nextLine();
                 if (pass.equals("yozgat66")) {

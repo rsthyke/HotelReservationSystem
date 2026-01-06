@@ -1,5 +1,7 @@
 package com.hotel.model;
 
+//Simple class to handle payments.
+//It stores payment ID, amount and method.
 public class Payment {
     private final String paymentId;
     private final double amount;

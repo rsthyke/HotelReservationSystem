@@ -2,12 +2,18 @@ package com.hotel.model;
 
 import java.time.LocalDate;
 
+//Represents a Deluxe Room.
+//It has extra luxury features and a luxury tax.
 public class DeluxeRoom extends Room {
     private boolean hasMiniBar;
     private boolean hasJacuzzi;
     private boolean hasBalcony;
     private double luxuryTax;
 
+    /**
+     * Default constructor for Deluxe Room.
+     * Includes all amenities and 20% luxury tax.
+     */
     public DeluxeRoom(String roomNumber, int capacity, double basePrice) {
         super(roomNumber, capacity, basePrice);
         this.hasMiniBar = true;
@@ -16,6 +22,7 @@ public class DeluxeRoom extends Room {
         this.luxuryTax = 0.20; // 20% extra
     }
 
+    //Custom constructor to set specific features.
     public DeluxeRoom(String roomNumber, int capacity, double basePrice, 
                       boolean hasMiniBar, boolean hasJacuzzi, boolean hasBalcony, double luxuryTax) {
         super(roomNumber, capacity, basePrice);
@@ -25,9 +32,13 @@ public class DeluxeRoom extends Room {
         this.luxuryTax = luxuryTax;
     }
 
+    /**
+     * Calculates price for Deluxe Room
+     * Adds luxury tax and increases price by 30% on weekends.
+     */
     @Override
     public double calculatePrice(LocalDate date) {
-        double currentPrice = getBasePrice() * (1 + luxuryTax);
+        double currentPrice = getBasePrice() * (1 + luxuryTax);// First apply the luxury tax to the base price
         if (date.getDayOfWeek().getValue() >= 5) {
             currentPrice *= 1.30;
         }

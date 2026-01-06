@@ -3,13 +3,23 @@ package com.hotel.model;
 import java.util.ArrayList;
 import java.time.LocalDate;
 
-// Abstract class for Room
+ //Abstract class representing a general Room in the hotel.
+ //It holds common attributes like room number, capacity, and base price.
+
 public abstract class Room implements Reservable {
     private String roomNumber;
     private int capacity;
     private double basePrice;
     private boolean isClean;
     private final ArrayList<Reservation> reservations;
+
+    /**
+     * Constructor to initialize a Room.
+     * @param roomNumber The unique number of the room.
+     * @param capacity How many people can sleep here.
+     * @param basePrice The starting price of the room.
+     * Rooms are clean by default when created
+     */
 
     public Room(String roomNumber, int capacity, double basePrice) {
         this.roomNumber = roomNumber;
@@ -19,9 +29,13 @@ public abstract class Room implements Reservable {
         this.reservations = new ArrayList<>();
     }
 
-    // Abstract method for polymorphism
+    // Abstract method: Child classes (Standard, Deluxe) must implement their own pricing logic.
     public abstract double calculatePrice(LocalDate date);
 
+    /**
+     * Adds a new reservation to this room's history.
+     * @param res The reservation object.
+     */
     public void addReservation(Reservation res) {
         reservations.add(res);
     }
