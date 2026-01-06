@@ -85,7 +85,7 @@ public class DataService {
 
         for (Customer c : customers) {
             lines.add(c.getCustomerId() + "," + c.getFirstName() + "," + c.getLastName() + "," +
-                      c.getEmail() + "," + c.getPhoneNumber() + "," + c.getLoyaltyPoints());
+                    c.getEmail() + "," + c.getPhoneNumber() + "," + c.getLoyaltyPoints());
         }
         FileOps.writeFile(CUSTOMERS_FILE, lines);
     }

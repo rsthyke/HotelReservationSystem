@@ -16,7 +16,7 @@ public class Main {
         }
 
         Scanner scanner = new Scanner(System.in);
-        Hotel hotel = new Hotel("Grand Hotel", "123 Main St");
+        Hotel hotel = new Hotel("Ocean View Hotel", "1020 Ocean Drive, Vice City");
         DataService dataService = new DataService();
 
         // Load existing data from CSV files
@@ -36,13 +36,17 @@ public class Main {
         }
 
         while (true) {
-            System.out.println("1. List Rooms");
-            System.out.println("2. Register Customer");
-            System.out.println("3. Make Reservation");
-            System.out.println("4. Get Room Recommendation");
-            System.out.println("5. View My Reservations");
-            System.out.println("6. Save & Exit");
-            System.out.print("Choice: ");
+            System.out.println("\n========================================");
+            System.out.println("           OCEAN VIEV HOTEL");
+            System.out.println("========================================");
+            System.out.println("  [1] List All Rooms");
+            System.out.println("  [2] Register New Customer");
+            System.out.println("  [3] Make a Reservation");
+            System.out.println("  [4] Get Room Recommendation");
+            System.out.println("  [5] View My Reservations");
+            System.out.println("  [6] Save Data & Exit");
+            System.out.println("========================================");
+            System.out.print(">> Enter your choice: ");
 
             int choice = 0;
             // Prevent crash if user types text instead of number (Fixed Crash Bug)
@@ -64,7 +68,7 @@ public class Main {
                 while (true) {
                     System.out.print("Email: ");
                     email = scanner.nextLine();
-                    if (email.contains("@")) {
+                    if (email.contains("@") && email.contains(".")) {
                         break;
                     }
                     System.out.println("Error: Invalid email! Please try again.");
@@ -91,13 +95,14 @@ public class Main {
                     continue;
                 }
 
-                System.out.print("Room Number: ");
-                String roomNum = scanner.nextLine();
-                Room r = hotel.findRoom(roomNum);
-
-                if (r == null) {
-                    System.out.println("Room not found!");
-                    continue;
+                Room selectedRoom = null;
+                while (selectedRoom == null) {
+                    System.out.print("Room Number: ");
+                    String roomNum = scanner.nextLine();
+                    selectedRoom = hotel.findRoom(roomNum);
+                    if (selectedRoom == null) {
+                        System.out.println("Error: Room not found! Please try again.");
+                    }
                 }
 
                 // Loop until valid date format is entered (Fixed Crash Bug)
@@ -129,7 +134,25 @@ public class Main {
                     }
                 }
 
-                hotel.bookRoom(c, r, in, out);
+                boolean usePoints = false;
+                if (c.getLoyaltyPoints() > 0) {
+                    System.out.println("You have " + c.getLoyaltyPoints() + " Loyalty Points.");
+                    System.out.print("Do you want to use your points for a discount? (Y/N): ");
+                    String response = scanner.nextLine().trim().toUpperCase();
+                    if (response.equals("Y")) {
+                        usePoints = true;
+                    }
+                }
+
+                hotel.printInvoicePreview(c, selectedRoom, in, out, usePoints);
+                System.out.print("Confirm Payment and Reservation? (Y/N): ");
+                String confirm = scanner.nextLine().trim().toUpperCase();
+                if (confirm.equals("Y")) {
+                    hotel.bookRoom(c, selectedRoom, in, out, usePoints);
+                } else {
+                    System.out.println("Transaction cancelled by user.");
+                }
+
             } else if (choice == 4) {
                 System.out.print("Enter Customer Email for Recommendation: ");
                 String email = scanner.nextLine();

@@ -27,9 +27,13 @@ public class Reservation {
     }
 
     public double calculateTotalAmount() {
-        long days = java.time.temporal.ChronoUnit.DAYS.between(checkInDate, checkOutDate);
-        if (days < 1) days = 1;
-        return room.calculatePrice(checkInDate) * days;
+        double totalAmount = 0;
+        LocalDate date = checkInDate;
+        while (date.isBefore(checkOutDate)) {
+            totalAmount += room.calculatePrice(date);
+            date = date.plusDays(1);
+        }
+        return totalAmount;
     }
 
     // Getters and Setters

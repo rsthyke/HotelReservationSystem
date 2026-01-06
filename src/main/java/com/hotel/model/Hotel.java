@@ -28,9 +28,9 @@ public class Hotel {
         customers.add(customer);
     }
 
-    public void bookRoom(Customer customer, Room room, LocalDate checkIn, LocalDate checkOut) {
+    public void bookRoom(Customer customer, Room room, LocalDate checkIn, LocalDate checkOut, boolean usePoints) {
         if (customer.getLastBookingTime() != null &&
-                Duration.between(customer.getLastBookingTime(), LocalDateTime.now()).getSeconds() < 10) {
+                Duration.between(customer.getLastBookingTime(), LocalDateTime.now()).getSeconds() < 60) {
             System.out.println("Fraud alert! You are booking too fast. Please wait a moment.");
             return;
         }
@@ -58,11 +58,43 @@ public class Hotel {
         }
 
         Reservation res = new Reservation(customer, room, checkIn, checkOut);
+        double totalAmount = res.calculateTotalAmount();
+        double discount = 0;
+
+        if (usePoints) {
+            int points = customer.getLoyaltyPoints();
+            if (points > 0) {
+                double maxDiscount = points / 10.0;
+                if (maxDiscount >= totalAmount) {
+                    discount = totalAmount;
+                    int pointsUsed = (int)(totalAmount * 10);
+                    customer.redeemLoyaltyPoints(pointsUsed);
+                    System.out.println("Loyalty Points Used: " + pointsUsed + " (-$" + totalAmount + ")");
+                } else {
+                    discount = maxDiscount;
+                    customer.redeemLoyaltyPoints(points);
+                    System.out.println("Loyalty Points Used: " + points + " (-$" + discount + ")");
+                }
+            } else {
+                System.out.println("No loyalty points available to use.");
+            }
+        }
+
+        double finalPrice = totalAmount - discount;
+        System.out.println("Total Price: $" + totalAmount);
+        if (discount > 0) {
+            System.out.println("Discount Applied: -$" + discount);
+            System.out.println("Final Price to Pay: $" + finalPrice);
+        }
+
+        int pointsEarned = (int)(finalPrice * 0.05);
+        customer.addLoyaltyPoints(pointsEarned);
         reservations.add(res);
         room.addReservation(res);
         customer.addReservation(res);
         customer.setLastBookingTime(LocalDateTime.now());
         System.out.println("Reservation successful! ID: " + res.getReservationId() + " in Room: " + room.getRoomNumber());
+        System.out.println("You earned " + pointsEarned + " Loyalty Points! Total Points: " + customer.getLoyaltyPoints());
     }
 
     public ArrayList<Room> searchAvailableRooms(LocalDate checkIn, LocalDate checkOut) {
@@ -101,9 +133,18 @@ public class Hotel {
     }
 
     public void displayAllRooms() {
+        System.out.println("\n-------------------------------------------------------------");
+        System.out.printf("%-10s | %-15s | %-10s | %-10s%n", "Room No", "Type", "Price", "Status");
+        System.out.println("-------------------------------------------------------------");
         for (Room r : rooms) {
-            System.out.println(r.getRoomNumber() + " - " + r.getRoomType() + " - $" + r.calculatePrice(LocalDate.now()));
+            String status = r.isClean() ? "Available" : "Occupied";
+            System.out.printf("%-10s | %-15s | $%-9.2f | %-10s%n",
+                    r.getRoomNumber(),
+                    r.getRoomType(),
+                    r.calculatePrice(LocalDate.now()),
+                    status);
         }
+        System.out.println("-------------------------------------------------------------");
     }
 
     public void displayReservations(String email) {
@@ -112,7 +153,7 @@ public class Hotel {
         for (Reservation r : reservations) {
             if (r.getCustomer().getEmail().equals(email)) {
                 System.out.println(r.getReservationId() + " - Room: " + r.getRoom().getRoomNumber() +
-                        " (" + r.getCheckInDate() + " to " + r.getCheckOutDate() + ")");
+                        " (" + r.getCheckInDate() + " to " + r.getCheckOutDate() + ")" + " | Total: $" + r.calculateTotalAmount());
                 found = true;
             }
         }
@@ -245,6 +286,38 @@ public class Hotel {
 
         System.out.println("Sorry, no suitable room found.");
         return null;
+    }
+
+    public void printInvoicePreview(Customer customer, Room room, LocalDate checkIn, LocalDate checkOut, boolean usePoints) {
+        Reservation tempRes = new Reservation(customer, room, checkIn, checkOut);
+        double totalAmount = tempRes.calculateTotalAmount();
+        double discount = 0;
+
+        if (usePoints && customer.getLoyaltyPoints() > 0) {
+            double maxDiscount = customer.getLoyaltyPoints() / 10.0;
+            if (maxDiscount >= totalAmount) {
+                discount = totalAmount;
+            } else {
+                discount = maxDiscount;
+            }
+        }
+
+        double finalPrice = totalAmount - discount;
+
+        System.out.println("\n========================================");
+        System.out.println("         PAYMENT CONFIRMATION");
+        System.out.println("========================================");
+        System.out.println("Customer: " + customer.getFirstName() + " " + customer.getLastName());
+        System.out.println("Room: " + room.getRoomNumber() + " (" + room.getRoomType() + ")");
+        System.out.println("Check-in:  " + checkIn);
+        System.out.println("Check-out: " + checkOut);
+        System.out.println("----------------------------------------");
+        System.out.printf("Total Amount:      $%.2f%n", totalAmount);
+        if (discount > 0) {
+            System.out.printf("Loyalty Discount: -$%.2f%n", discount);
+        }
+        System.out.printf("FINAL TO PAY:      $%.2f%n", finalPrice);
+        System.out.println("========================================");
     }
 
     // Getters

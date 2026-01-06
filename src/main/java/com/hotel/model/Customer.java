@@ -32,8 +32,6 @@ public class Customer {
 
     public void addReservation(Reservation reservation) {
         reservationHistory.add(reservation);
-        // Add 10 points for each reservation
-        loyaltyPoints += 10;
     }
 
     public boolean redeemLoyaltyPoints(int points) {
